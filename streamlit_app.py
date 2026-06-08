@@ -26,7 +26,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 FOOTER = "<div class='footer'>Road Accident Hotspot Detection | Najmul Hoda </div>"
-SAVE_DIR = 'outputs/'
+SAVE_DIR = '/content/drive/MyDrive/accident_hotspot_outputs/'
 
 # Load saved artefacts
 @st.cache_resource
@@ -189,13 +189,20 @@ elif page == 'Severity Predictor':
             is_day      = st.checkbox('Daytime?', value=True)
 
         features = np.array([[
-            hour, day, month, visibility, temperature,
-            humidity, wind_speed, precip,
-            int(junction), int(traffic_sig), int(crossing), int(is_day),
-            0
+                hour,
+                day,
+                month,
+                visibility,
+                temperature,
+                humidity,
+                wind_speed,
+                precip,
+                int(junction),
+                int(traffic_sig),
+                int(crossing)
         ]])
 
-        if st.button('🔮 Predict Severity', type='primary'):
+        if st.button(' Predict Severity', type='primary'):
             feat_scaled = scaler.transform(features)
             pred        = best_model.predict(feat_scaled)[0]
             prob        = best_model.predict_proba(feat_scaled)[0].max()
@@ -210,7 +217,7 @@ elif page == 'Severity Predictor':
 
     # ── Severity Map only ─────────────────────────────────────────
     st.markdown('---')
-    st.subheader('🚨 Severity Map')
+    st.subheader(' Severity Map')
 
     import streamlit.components.v1 as components
 
@@ -228,7 +235,7 @@ elif page == 'Severity Predictor':
 # PAGE 4 — HOTSPOT CLUSTERS
 # ================================================================
 elif page == 'Hotspot Clusters':
-    st.title('📍 K-Means Hotspot Clusters')
+    st.title(' K-Means Hotspot Clusters')
     st.markdown('---')
 
     if not artefacts_ok:
@@ -255,8 +262,8 @@ elif page == 'Hotspot Clusters':
     import streamlit.components.v1 as components
 
     for label, fname in [
-        ('🔥 Accident Heatmap',    'heatmap_accidents.html'),
-        ('📍 Cluster Hotspot Map', 'cluster_hotspots.html'),
+        (' Accident Heatmap',    'heatmap_accidents.html'),
+        (' Cluster Hotspot Map', 'cluster_hotspots.html'),
     ]:
         path = SAVE_DIR + fname
         st.subheader(label)
@@ -274,7 +281,7 @@ elif page == 'Hotspot Clusters':
 # PAGE 5 — MODEL RESULTS + CONFUSION MATRICES
 # ================================================================
 elif page == 'Model Results & Confusion Matrix':
-    st.title('🤖 Model Results & Confusion Matrices')
+    st.title(' Model Results & Confusion Matrices')
     st.markdown('---')
 
     # Accuracy cards
