@@ -95,7 +95,7 @@ if page == 'Overview':
             ' SMOTE Class Balancing',
             ' Severity Prediction — RF · XGB · LR',
             ' Confusion Matrices (all models)',
-            ' KMeans Hotspot Clustering (K=8)',
+            ' KMeans Hotspot Clustering (K=6)',
             ' Geospatial Maps (Folium)',
             ' All outputs saved to Drive',
         ]:
