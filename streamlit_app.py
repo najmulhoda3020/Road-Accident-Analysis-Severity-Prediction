@@ -77,7 +77,7 @@ if page == 'Overview':
     for col, label, val in zip(
         [c1, c2, c3, c4],
         ['Dataset', 'Features', 'ML Models', 'Hotspot Clusters'],
-        ['US Accidents 2023', '13', '3 (RF · XGB · LR)', 'K=6 (KMeans)']
+        ['US Accidents 2023', '32', '3 (RF · XGB · LR)', 'K=6 (KMeans)']
     ):
         col.markdown(f"""
         <div class='metric-box'>
@@ -174,7 +174,7 @@ elif page == 'Severity Predictor':
         st.warning(f'Could not load saved models: {artefact_err}\n\nRun the full notebook first.')
     else:
         # ── Numerical Features (10) ───────────────────────────────
-        st.markdown('#### 🌡️ Weather & Road Conditions')
+        st.markdown('#### Weather & Road Conditions')
         c1, c2 = st.columns(2)
         with c1:
             temperature  = st.slider('Temperature (°F)',      -30.0, 130.0, 65.0)
@@ -200,7 +200,7 @@ elif page == 'Severity Predictor':
             state             = st.number_input('State (encoded)',             min_value=0, max_value=60,  value=5)
 
         # ── Boolean Road Features (13) ────────────────────────────
-        st.markdown('#### 🚦 Road Features')
+        st.markdown('####  Road Features')
         b1, b2, b3, b4, b5 = st.columns(5)
         amenity         = int(b1.checkbox('Amenity'))
         bump            = int(b2.checkbox('Bump'))
@@ -219,7 +219,7 @@ elif page == 'Severity Predictor':
         turning_loop    = int(b13.checkbox('Turning Loop'))
 
         # ── Temporal Features (6) ─────────────────────────────────
-        st.markdown('#### 🕐 Time Features')
+        st.markdown('#### Time Features')
         c6, c7 = st.columns(2)
         with c6:
             hour        = st.slider('Hour of Day',         0,  23, 8)
@@ -247,7 +247,7 @@ elif page == 'Severity Predictor':
             feat_scaled = scaler.transform(features)
             pred        = best_model.predict(feat_scaled)[0]
             prob        = best_model.predict_proba(feat_scaled)[0].max()
-            label = 'High Severity 🚨' if pred == 1 else 'Low Severity ✅'
+            label = 'High Severity ' if pred == 1 else 'Low Severity '
             color = '#e74c3c'           if pred == 1 else '#2ecc71'
             st.markdown(f"""
             <div class='metric-box' style='border-left:4px solid {color}; margin-top:20px'>
