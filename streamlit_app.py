@@ -104,7 +104,7 @@ if page == 'Overview':
         st.subheader(' Tech Stack')
         tech = pd.DataFrame({
             'Component':  ['Language','ML','Clustering','Viz','Dashboard','Platform'],
-            'Technology': ['Python 3','RF · XGBoost · LR','KMeans (K=8)',
+            'Technology': ['Python 3','RF · XGBoost · LR','KMeans (K=6)',
                            'Plotly · Folium','Streamlit','Google Colab']
         })
         st.dataframe(tech, use_container_width=True, hide_index=True)
