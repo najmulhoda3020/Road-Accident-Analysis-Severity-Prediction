@@ -77,7 +77,7 @@ if page == 'Overview':
     for col, label, val in zip(
         [c1, c2, c3, c4],
         ['Dataset', 'Features', 'ML Models', 'Hotspot Clusters'],
-        ['US Accidents 2023', '13', '3 (RF · XGB · LR)', 'K=8 (KMeans)']
+        ['US Accidents 2023', '13', '3 (RF · XGB · LR)', 'K=6 (KMeans)']
     ):
         col.markdown(f"""
         <div class='metric-box'>
@@ -164,50 +164,91 @@ elif page == 'EDA & Trends':
 # ================================================================
 # PAGE 3 — SEVERITY PREDICTOR
 # ================================================================
+
 elif page == 'Severity Predictor':
-    st.title('🔮 Accident Severity Predictor')
+    st.title(' Accident Severity Predictor')
     st.markdown('Fill in conditions to predict accident severity using the best trained model.')
     st.markdown('---')
 
     if not artefacts_ok:
-        st.warning(f' Could not load saved models: {artefact_err}\n\nRun the full notebook first.')
+        st.warning(f'Could not load saved models: {artefact_err}\n\nRun the full notebook first.')
     else:
+        # ── Numerical Features (10) ───────────────────────────────
+        st.markdown('#### 🌡️ Weather & Road Conditions')
         c1, c2 = st.columns(2)
         with c1:
-            hour        = st.slider('Hour of Day',          0,  23, 8)
-            day         = st.slider('Day of Week (0=Mon)',  0,   6, 0)
-            month       = st.slider('Month',                1,  12, 6)
-            visibility  = st.slider('Visibility (mi)',      0.0,10.0, 9.0)
-            temperature = st.slider('Temperature (°F)',     0.0,120.0,65.0)
+            temperature  = st.slider('Temperature (°F)',      -30.0, 130.0, 65.0)
+            wind_chill   = st.slider('Wind Chill (°F)',        -50.0, 130.0, 60.0)
+            humidity     = st.slider('Humidity (%)',             0,   100,   60)
+            pressure     = st.slider('Pressure (in)',           25.0,  35.0, 29.9)
+            visibility   = st.slider('Visibility (mi)',          0.0,  10.0,  9.0)
         with c2:
-            humidity    = st.slider('Humidity (%)',         0, 100, 60)
-            wind_speed  = st.slider('Wind Speed (mph)',     0.0,80.0,10.0)
-            precip      = st.slider('Precipitation (in)',   0.0, 5.0, 0.0)
-            junction    = st.checkbox('Junction?')
-            traffic_sig = st.checkbox('Traffic Signal?')
-            crossing    = st.checkbox('Crossing?')
-            is_day      = st.checkbox('Daytime?', value=True)
+            wind_speed   = st.slider('Wind Speed (mph)',         0.0,  80.0, 10.0)
+            precipitation= st.slider('Precipitation (in)',       0.0,   5.0,  0.0)
+            distance     = st.slider('Distance (mi)',            0.0,  20.0,  0.3)
+            start_lat    = st.slider('Latitude',                24.0,  50.0, 37.5)
+            start_lng    = st.slider('Longitude',             -125.0, -65.0,-96.0)
 
+        # ── Categorical Features (3) ──────────────────────────────
+        st.markdown('####  Categorical Features')
+        c3, c4, c5 = st.columns(3)
+        with c3:
+            weather_condition = st.number_input('Weather Condition (encoded)', min_value=0, max_value=200, value=0)
+        with c4:
+            wind_direction    = st.number_input('Wind Direction (encoded)',    min_value=0, max_value=30,  value=0)
+        with c5:
+            state             = st.number_input('State (encoded)',             min_value=0, max_value=60,  value=5)
+
+        # ── Boolean Road Features (13) ────────────────────────────
+        st.markdown('#### 🚦 Road Features')
+        b1, b2, b3, b4, b5 = st.columns(5)
+        amenity         = int(b1.checkbox('Amenity'))
+        bump            = int(b2.checkbox('Bump'))
+        crossing        = int(b3.checkbox('Crossing'))
+        give_way        = int(b4.checkbox('Give Way'))
+        junction        = int(b5.checkbox('Junction'))
+        b6, b7, b8, b9, b10 = st.columns(5)
+        no_exit         = int(b6.checkbox('No Exit'))
+        railway         = int(b7.checkbox('Railway'))
+        roundabout      = int(b8.checkbox('Roundabout'))
+        station         = int(b9.checkbox('Station'))
+        stop            = int(b10.checkbox('Stop'))
+        b11, b12, b13, _, _ = st.columns(5)
+        traffic_calming = int(b11.checkbox('Traffic Calming'))
+        traffic_signal  = int(b12.checkbox('Traffic Signal'))
+        turning_loop    = int(b13.checkbox('Turning Loop'))
+
+        # ── Temporal Features (6) ─────────────────────────────────
+        st.markdown('#### 🕐 Time Features')
+        c6, c7 = st.columns(2)
+        with c6:
+            hour        = st.slider('Hour of Day',         0,  23, 8)
+            day_of_week = st.slider('Day of Week (0=Mon)', 0,   6, 0)
+            month       = st.slider('Month',               1,  12, 6)
+        with c7:
+            is_weekend  = int(day_of_week >= 5)
+            is_rush     = int(hour in [7, 8, 9, 17, 18, 19])
+            is_night    = int(hour < 6 or hour >= 20)
+            st.info(f'Auto-computed:\n\n'
+                    f'IsWeekend: **{is_weekend}** | IsRushHour: **{is_rush}** | IsNight: **{is_night}**')
+
+      
         features = np.array([[
-                hour,
-                day,
-                month,
-                visibility,
-                temperature,
-                humidity,
-                wind_speed,
-                precip,
-                int(junction),
-                int(traffic_sig),
-                int(crossing)
-        ]])
+            temperature, wind_chill, humidity, pressure, visibility,
+            wind_speed, precipitation, distance, start_lat, start_lng,
+            weather_condition, wind_direction, state,
+            amenity, bump, crossing, give_way, junction,
+            no_exit, railway, roundabout, station, stop,
+            traffic_calming, traffic_signal, turning_loop,
+            hour, day_of_week, month, is_weekend, is_rush, is_night
+        ]])  # shape → (1, 32)
 
-        if st.button(' Predict Severity', type='primary'):
+        if st.button('🔍 Predict Severity', type='primary'):
             feat_scaled = scaler.transform(features)
             pred        = best_model.predict(feat_scaled)[0]
             prob        = best_model.predict_proba(feat_scaled)[0].max()
-            label = 'High Severity ' if pred == 1 else 'Low Severity '
-            color = '#e74c3c'          if pred == 1 else '#2ecc71'
+            label = 'High Severity 🚨' if pred == 1 else 'Low Severity ✅'
+            color = '#e74c3c'           if pred == 1 else '#2ecc71'
             st.markdown(f"""
             <div class='metric-box' style='border-left:4px solid {color}; margin-top:20px'>
                 <div class='metric-label'>Predicted Severity</div>
@@ -215,12 +256,10 @@ elif page == 'Severity Predictor':
                 <div class='metric-label'>Confidence: {prob:.1%}</div>
             </div>""", unsafe_allow_html=True)
 
-    # ── Severity Map only ─────────────────────────────────────────
+    # Severity Map
     st.markdown('---')
-    st.subheader(' Severity Map')
-
+    st.subheader('🗺️ Severity Map')
     import streamlit.components.v1 as components
-
     path = SAVE_DIR + 'severity_map.html'
     if os.path.exists(path):
         with open(path, 'r', encoding='utf-8') as f:
