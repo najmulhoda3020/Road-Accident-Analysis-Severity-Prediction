@@ -26,7 +26,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 FOOTER = "<div class='footer'>Road Accident Hotspot Detection | Najmul Hoda </div>"
-SAVE_DIR = '/content/drive/MyDrive/accident_hotspot_outputs/'
+SAVE_DIR = 'Outputs/'
 
 # Load saved artefacts
 @st.cache_resource
