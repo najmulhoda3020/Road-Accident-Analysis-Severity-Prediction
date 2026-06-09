@@ -1,4 +1,7 @@
 # Traffic-Accident-Severity-and-Hotspot-Detection
+
+Live Demo: [Click Here](https://road-accident-analysis-severity-prediction-fzkujrfyueexs3gh8jy.streamlit.app/)
+
 A data-driven exploration of 100,000+ US road accidents that uncovers hidden patterns in time, weather, and geography — and then applies Machine Learning to predict accident severity and map high-risk hotspots across the country.
 
 End-to-end ML pipeline on US Accidents dataset to detect road accident hotspots and predict severity. Uses Random Forest, XGBoost &amp; Logistic Regression with SMOTE balancing, K-Means clustering, Folium geospatial maps, Plotly trends and a Streamlit dashboard. Built on Google Colab.
