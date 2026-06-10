@@ -187,7 +187,7 @@ elif page == 'Model Results & Confusion Matrix':
     # Accuracy bar chart
     st.subheader('Accuracy Comparison')
     names = ['Random Forest','XGBoost','Logistic Regression']
-    accs  = [0.92, 0.91, 0.78]
+    accs  = [0.8205, 0.9020, 0.6087]
     fig, ax = plt.subplots(figsize=(8,4), facecolor='#1e2130')
     dark_ax(ax)
     bar_colors = ['#2ecc71' if a == max(accs) else '#3498db' for a in accs]
