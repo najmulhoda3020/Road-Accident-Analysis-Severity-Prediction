@@ -172,9 +172,9 @@ elif page == 'Model Results & Confusion Matrix':
     c1, c2, c3 = st.columns(3)
     for col, (name, acc, color) in zip(
         [c1, c2, c3],
-        [('Random Forest','~92%','#2ecc71'),
-         ('XGBoost',      '~91%','#3498db'),
-         ('Logistic Reg', '~78%','#e67e22')]
+        [('Random Forest','~82.05%','#2ecc71'),
+         ('XGBoost',      '~90.20%','#3498db'),
+         ('Logistic Reg', '~60.87%','#e67e22')]
     ):
         col.markdown(f"""
         <div class='metric-box' style='border-left:4px solid {color}'>
