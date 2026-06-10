@@ -162,7 +162,75 @@ elif page == 'EDA & Trends':
     st.markdown(FOOTER, unsafe_allow_html=True)
 
 # ================================================================
-# PAGE 3 — SEVERITY PREDICTOR
+# PAGE 3 — MODEL RESULTS + CONFUSION MATRICES
+# ================================================================
+elif page == 'Model Results & Confusion Matrix':
+    st.title(' Model Results & Confusion Matrices')
+    st.markdown('---')
+
+    # Accuracy cards
+    c1, c2, c3 = st.columns(3)
+    for col, (name, acc, color) in zip(
+        [c1, c2, c3],
+        [('Random Forest','~92%','#2ecc71'),
+         ('XGBoost',      '~91%','#3498db'),
+         ('Logistic Reg', '~78%','#e67e22')]
+    ):
+        col.markdown(f"""
+        <div class='metric-box' style='border-left:4px solid {color}'>
+            <div class='metric-label'>{name}</div>
+            <div class='metric-value' style='color:{color}'>{acc}</div>
+        </div>""", unsafe_allow_html=True)
+
+    st.markdown('---')
+
+    # Accuracy bar chart
+    st.subheader('Accuracy Comparison')
+    names = ['Random Forest','XGBoost','Logistic Regression']
+    accs  = [0.92, 0.91, 0.78]
+    fig, ax = plt.subplots(figsize=(8,4), facecolor='#1e2130')
+    dark_ax(ax)
+    bar_colors = ['#2ecc71' if a == max(accs) else '#3498db' for a in accs]
+    bars = ax.bar(names, [a*100 for a in accs], color=bar_colors, edgecolor='black')
+    ax.set_ylim(0,110); ax.set_ylabel('Accuracy (%)')
+    for bar, acc in zip(bars, accs):
+        ax.text(bar.get_x()+bar.get_width()/2,
+                bar.get_height()+1,
+                f'{acc*100:.1f}%', ha='center', color='white', fontweight='bold')
+    st.pyplot(fig)
+
+    st.markdown('---')
+
+    # Confusion matrices — use saved PNG if available
+    st.subheader('Confusion Matrices (All Models)')
+    cm_path = SAVE_DIR + 'confusion_matrices.png'
+    if os.path.exists(cm_path):
+        st.image(cm_path, use_column_width=True)
+    else:
+        st.info('ℹ️ Run the **Step 11 (Confusion Matrix)** cell in the notebook first, then relaunch this app.')
+        # Fallback — synthetic demo so page is not blank
+        fig, axes = plt.subplots(1, 3, figsize=(15,5), facecolor='#1e2130')
+        fig.suptitle('Confusion Matrices (demo)', color='white', fontsize=13)
+        cms = [
+            np.array([[8200, 620],[580, 9400]]),
+            np.array([[8100, 720],[650, 9330]]),
+            np.array([[7000,1800],[1600,8400]]),
+        ]
+        for ax, cm, nm in zip(axes, cms, names):
+            disp = ConfusionMatrixDisplay(cm, display_labels=['Low','High'])
+            disp.plot(ax=ax, colorbar=False, cmap='Blues')
+            ax.set_title(nm, color='white')
+            ax.set_facecolor('#1e2130')
+            for item in ([ax.xaxis.label, ax.yaxis.label]
+                         + ax.get_xticklabels() + ax.get_yticklabels()):
+                item.set_color('white')
+        plt.tight_layout()
+        st.pyplot(fig)
+
+    st.markdown(FOOTER, unsafe_allow_html=True)
+
+# ================================================================
+# PAGE 4 — SEVERITY PREDICTOR
 # ================================================================
 
 elif page == 'Severity Predictor':
@@ -271,7 +339,7 @@ elif page == 'Severity Predictor':
     st.markdown(FOOTER, unsafe_allow_html=True)
 
 # ================================================================
-# PAGE 4 — HOTSPOT CLUSTERS
+# PAGE 5 — HOTSPOT CLUSTERS
 # ================================================================
 elif page == 'Hotspot Clusters':
     st.title(' K-Means Hotspot Clusters')
@@ -316,70 +384,3 @@ elif page == 'Hotspot Clusters':
 
     st.markdown(FOOTER, unsafe_allow_html=True)
 
-# ================================================================
-# PAGE 5 — MODEL RESULTS + CONFUSION MATRICES
-# ================================================================
-elif page == 'Model Results & Confusion Matrix':
-    st.title(' Model Results & Confusion Matrices')
-    st.markdown('---')
-
-    # Accuracy cards
-    c1, c2, c3 = st.columns(3)
-    for col, (name, acc, color) in zip(
-        [c1, c2, c3],
-        [('Random Forest','~92%','#2ecc71'),
-         ('XGBoost',      '~91%','#3498db'),
-         ('Logistic Reg', '~78%','#e67e22')]
-    ):
-        col.markdown(f"""
-        <div class='metric-box' style='border-left:4px solid {color}'>
-            <div class='metric-label'>{name}</div>
-            <div class='metric-value' style='color:{color}'>{acc}</div>
-        </div>""", unsafe_allow_html=True)
-
-    st.markdown('---')
-
-    # Accuracy bar chart
-    st.subheader('Accuracy Comparison')
-    names = ['Random Forest','XGBoost','Logistic Regression']
-    accs  = [0.92, 0.91, 0.78]
-    fig, ax = plt.subplots(figsize=(8,4), facecolor='#1e2130')
-    dark_ax(ax)
-    bar_colors = ['#2ecc71' if a == max(accs) else '#3498db' for a in accs]
-    bars = ax.bar(names, [a*100 for a in accs], color=bar_colors, edgecolor='black')
-    ax.set_ylim(0,110); ax.set_ylabel('Accuracy (%)')
-    for bar, acc in zip(bars, accs):
-        ax.text(bar.get_x()+bar.get_width()/2,
-                bar.get_height()+1,
-                f'{acc*100:.1f}%', ha='center', color='white', fontweight='bold')
-    st.pyplot(fig)
-
-    st.markdown('---')
-
-    # Confusion matrices — use saved PNG if available
-    st.subheader('Confusion Matrices (All Models)')
-    cm_path = SAVE_DIR + 'confusion_matrices.png'
-    if os.path.exists(cm_path):
-        st.image(cm_path, use_column_width=True)
-    else:
-        st.info('ℹ️ Run the **Step 11 (Confusion Matrix)** cell in the notebook first, then relaunch this app.')
-        # Fallback — synthetic demo so page is not blank
-        fig, axes = plt.subplots(1, 3, figsize=(15,5), facecolor='#1e2130')
-        fig.suptitle('Confusion Matrices (demo)', color='white', fontsize=13)
-        cms = [
-            np.array([[8200, 620],[580, 9400]]),
-            np.array([[8100, 720],[650, 9330]]),
-            np.array([[7000,1800],[1600,8400]]),
-        ]
-        for ax, cm, nm in zip(axes, cms, names):
-            disp = ConfusionMatrixDisplay(cm, display_labels=['Low','High'])
-            disp.plot(ax=ax, colorbar=False, cmap='Blues')
-            ax.set_title(nm, color='white')
-            ax.set_facecolor('#1e2130')
-            for item in ([ax.xaxis.label, ax.yaxis.label]
-                         + ax.get_xticklabels() + ax.get_yticklabels()):
-                item.set_color('white')
-        plt.tight_layout()
-        st.pyplot(fig)
-
-    st.markdown(FOOTER, unsafe_allow_html=True)
