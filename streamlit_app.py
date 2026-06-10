@@ -56,7 +56,7 @@ def dark_ax(ax):
 # Sidebar navigation
 with st.sidebar:
     st.markdown('### Road Accident Hotspot')
-    st.markdown('B.Tech ECE | GGSIPU')
+    st.markdown('Najmul Hoda')
     st.markdown('---')
     page = st.radio('Navigate', [
         'Overview',
